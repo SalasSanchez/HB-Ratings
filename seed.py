@@ -69,8 +69,8 @@ def load_ratings(session):
 
 
 def main(session):
-    # load_users(session)
-    # load_movies(session)
+    load_users(session)
+    load_movies(session)
     load_ratings(session)
 
 

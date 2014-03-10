@@ -4,10 +4,22 @@ from sqlalchemy import Column, Integer, String, DateTime
 
 import datetime
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import sessionmaker, scoped_session
+
 
 ENGINE = None
 Session = None
+
+engine = create_engine("sqlite:///ratings.db", echo=False)
+session = scoped_session(sessionmaker(bind=engine,
+                                      autocommit = False,
+                                      autoflush = False))
+
 Base = declarative_base()
+Base.query = session.query_property()
+
 
 ### Class declarations go here
 
@@ -32,23 +44,25 @@ class Rating(Base):
 	__tablename__ = "Ratings"
 
 	id = Column(Integer, primary_key = True)
-	movie_id = Column(Integer, nullable = True)
-	user_id = Column(Integer, nullable = True)
-	rating = Column(Integer, nullable = True)
+	user_id= Column(Integer, ForeignKey('users.id'))
+	movie_id = Column(Integer, ForeignKey('Movies.id'))
+	rating = Column(Integer)
 
+	user = relationship("User", backref=backref("Ratings", order_by=id))
+	movie = relationship("Movie", backref=backref("Ratings", order_by=id))
 
 ### End class declarations
 
 
 
-def connect():
-    global ENGINE
-    global Session
+# def connect():
+#     global ENGINE
+#     global Session
 
-    ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-    Session = sessionmaker(bind=ENGINE)
+#     ENGINE = create_engine("sqlite:///ratings.db", echo=True)
+#     Session = sessionmaker(bind=ENGINE)
 
-    return Session()  #this instantiates the session
+#     return Session()  #this instantiates the session
 
     #to instantiate sessions later: session = Session()
 
