@@ -1,0 +1,14 @@
+<html>
+
+
+{% block body %}
+  <ul>
+  <li>The user with id {{movies_list[0].user_id}} has rated the following movies:</li>
+  {% for movie in movies_list %}
+    <li>{{movie.movie.name}}: {{movie.rating}}</li>
+  {% endfor %}
+  </ul>
+{% endblock %}
+
+
+</html>
