@@ -12,8 +12,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 ENGINE = None
 Session = None
 
-engine = create_engine("sqlite:///ratings.db", echo=False)
-session = scoped_session(sessionmaker(bind=engine,
+ENGINE = create_engine("sqlite:///ratings.db", echo=False)
+session = scoped_session(sessionmaker(bind=ENGINE,
                                       autocommit = False,
                                       autoflush = False))
 
@@ -48,8 +48,8 @@ class Rating(Base):
 	movie_id = Column(Integer, ForeignKey('Movies.id'))
 	rating = Column(Integer)
 
-	user = relationship("User", backref=backref("Ratings", order_by=id))
-	movie = relationship("Movie", backref=backref("Ratings", order_by=id))
+	user = relationship("User", backref=backref("ratings", order_by=id))
+	movie = relationship("Movie", backref=backref("ratings", order_by=id))
 
 ### End class declarations
 
