@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, request, flash
+from flask import Flask, render_template, redirect, request, flash, session
 import model
 app = Flask(__name__)
+app.secret_key = 'Thisisnotasecretkey'
 
 @app.route("/")
 def index():
@@ -10,51 +11,76 @@ def index():
 
 @app.route("/signup")
 def signup():
-	html = render_template("signup.html")
+	html = render_template("signupform.html")
 	return html
 
+@app.route("/signup_complete", methods=['POST'])
+def signup_complete():
+	email =request.form.get('email')
+	#print "EMAIL", email
+	age = request.form.get('age')
+	#print "AGE", age
+	zipcode = request.form.get('zipcode')
+	#print "ZIPCODE", zipcode
+	password = request.form.get('password')
+	#print "PASSWORD", password
+
+	existing_users = model.session.query(model.User).filter_by(email=email).all()
+	# print "EXISTING USERS", existing_users
+
+	if existing_users == []:
+		u = model.User(email=email, age=age, zipcode=zipcode, password=password)
+		model.session.add(u)
+		model.session.commit()
+		flash("User created")
+		return "User created"
+		# return render_template("signup_complete.html", email=email, 
+		# 							  age=age,  #also include message in the html not pass it
+		# 							  zipcode=zipcode, 
+		# 							  password=password)
+	else:
+		#flash("This user is already in the database")
+		#return render_template("signupform.html")
+		return "This user is already in the database"
 
 
 
-	# email =request.form('email')
-	# age = request.form('age')
-	# zipcode = request.form('zipcode')
-	# password = request.form('password')
+@app.route("/login")
+def log_in():
+	return render_template("loginpage.html")
 
-	# model.User(email=email, age=age, zipcode=zipcode, password=password)
+@app.route("/login", methods=['POST'])
+def log_in_user():
+	email = request.form.get('email')
+	password = request.form.get('password')
 
-	# return render_template("signup.html", email=email, 
-	# 									  age=age, 
-	# 									  zipcode=zipcode, 
-	# 									  password=password)
+	user = model.session.query(model.User).filter_by(email=email).one()
 
-
-# @app.route("/log_in")
-# def log_in():
-# 	pass
-
-
-# @app.route('/login', methods=['POST', 'GET'])
-# def login():
-#     error = None
-#     if request.method == 'POST':
-#         if valid_login(request.form['username'],
-#                        request.form['password']):
-#             return log_the_user_in(request.form['username'])
-#         else:
-#             error = 'Invalid username/password'
-#     # the code below is executed if the request method
-#     # was GET or the credentials were invalid
-#     return render_template('login.html', error=error)
-
-
-# @app.route("all_users")
-#We should be able to view a list of all users
+	if password == user.password:
+		session['user.id']= user.id
+		return "You're logged in"
+	else:
+		return "Incorrect password. Please, try again"
 
 
 
-#We should be able to click on a user and view the list of movies they've rated, 
+@app.route("/all_users")   #view a list of all users
+def all_users():
+	all_users = model.session.query(model.User).all()  
+
+	return render_template("all_users.html", all_users=all_users)
+	
+	
+
+#click on a user and view the list of movies they've rated, 
 #as well as the ratings
+@app.route("/ratings_by_user")
+def ratings_by_user():
+	user = request.args.get('user')
+	movies_list= model.session.query(model.Rating).filter_by(user_id=user).all()
+	return render_template("ratings_by_user.html", movies_list=movies_list)  #or feed user_id=user as an argument directly
+
+
 
 #We should be able to, when logged in and viewing a record for a movie, 
 #either add or update a personal rating for that movie.
