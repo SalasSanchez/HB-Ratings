@@ -1,0 +1,18 @@
+
+<html>
+
+
+{% block body %}
+  <ul>
+  {% for user in all_users %}
+    <li><a href="/ratings_by_user?user={{user.id}}">{{ user.id }}</a></li> 
+    <!-- here goes the anchoring. and this sets the url with the user as argument.  -->
+  {% endfor %}
+  </ul>
+{% endblock %}
+
+
+
+
+
+</html>
