@@ -85,6 +85,32 @@ def ratings_by_user():
 #We should be able to, when logged in and viewing a record for a movie, 
 #either add or update a personal rating for that movie.
 
+@app.route("/view_movies")
+def view_movies():
+	movie_list= model.session.query(model.Movie).all()
+
+	return render_template("movie_list.html", movie_list=movie_list)
+
+
+@app.route("/movie_ratings")
+def movie_ratings():
+	movie_id= request.args.get('id')
+	movie_ratings = model.session.query(model.Rating).filter_by(movie_id=movie_id).all()
+	
+	return render_template("view_ratings.html", movie_ratings=movie_ratings, movie_id=movie_id)
+
+
+@app.route("/rating_updated", methods=["POST"])
+def update_rating():
+	rating=request.form.get('updated_rating')
+	user_id = session.get(user_id)  #TODO Why does this not work? Look at SESSIONS
+	movie_id = request.args.get('movie_id')
+
+	movie= model.session.query(model.Rating).filter_by(user_id=user_id, movie_id=movie_id)
+	movie.rating=rating
+	model.session.commit()
+	return "Rating updated"
+
 
 
 
