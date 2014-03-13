@@ -1,0 +1,32 @@
+<html>
+
+{%block body %}
+<div>
+	<h2>Update Your Rating</h2>
+ 	<form id="update" method="POST" action="/rating_updated?movie_id={{movie_id}}">
+        <label for="rating">New Rating</label>
+        	<input type="integer" id="updated_rating" name="updated_rating"/> 
+		<input type="submit">
+    </form>
+    
+    <h2>Add Your Rating</h2>
+ 	<form id="new" method="POST" action="/rating_added">
+        <label for="new_rating">New Rating</label>
+        	<input type="integer" id="new_rating" name="new_rating"/> 
+		<input type="submit">
+    </form>
+</div>
+
+  <h2>Ratings for {{movie_ratings[0].movie.name}}</h2>
+  <ul> 
+  {% for rating in movie_ratings %}
+    <li>{{ rating.rating }}</a></li> 
+  {% endfor %}
+  </ul>
+{% endblock %}
+
+
+
+
+
+</html>
