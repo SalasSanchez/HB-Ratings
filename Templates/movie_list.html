@@ -1,0 +1,16 @@
+<html>
+
+
+{% block body %}
+  <ul>
+  {% for item in movie_list %}
+    <li><a href="/movie_ratings?id={{item.id}}">{{ item.name }}</a></li> 
+  {% endfor %}
+  </ul>
+{% endblock %}
+
+
+
+
+
+</html>
